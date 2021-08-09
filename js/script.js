@@ -1,122 +1,89 @@
-// Questions
-let questions = [
-    {
-        question: 'How to write a "Hello World" in an alertbox?',
-        options: [
-            'alertBox("Hello World")',
-            'msgBox("Hello World")',
-            'msg("Hello World")',
-            'alert("Hello World")'
-        ],
-        answer: 3
-    },
-    {
-        question: "How do you create a function in Javascript?",
-        options: [
-            "function:myFunction()",
-            "function = myFunction()",
-            "function myFunction()"
-        ],
-        answer: 2
-    },
-    {
-        question: 'How to call a function called "myFunction"?',
-        options: ["call myFunction", "call function myFunction", "myFunction()"],
-        answer: 2
-    },
-    {
-        question: "How to write an IF conditional in Javascript?",
-        options: ["if i = 5", "if i == 5 then", "if (i == 5)", "if i = 5 then"],
-        answer: 2
-    },
-    {
-        question: 'How to make an if that executes code if "i" is different from 5',
-        options: ["if (i != 5)", "if (i <> 5)", "if i <> 5", "if i =! 5 then"],
-        answer: 0
-    },
-    {
-        question: "How the while loop starts?",
-        options: ["while (i <= 10)", "while (i <= 10; i++)", "while i = 1 to 10"],
-        answer: 0
-    },
-    {
-        question: "Inside which HTML element do we put the JavaScript?",
-        options: [
-            "script",
-            "javascript",
-            "scripting",
-            "js"],
-        answer: 0
-    },
-    {
-        question: "What is the correct JavaScript syntax to change the content of the HTML element below?",
-        options: [
-            "1",
-            "2",
-            "3",
-            "document.getElementById(`demo`).innerHTML = `Hello world!`"
-        ],
-        answer: 3
-    },
-    {
-        question: "Where is the correct place to insert a JavaScript?",
-        options: [
-            "Both the `head` section and the `body` section are correct",
-            "only `head`",
-            "only `body`"
-        ],
-        answer: 0
-    },
-    {
-        question: "What is the correct syntax for referring to an external script called `xxx.js?`",
-        options: [
-            "script href = `xxx.js`",
-            "script name = `xxx.js`",
-            "script src = `xxx.js`"
-        ],
-        answer: 2
-    }
-];
+import getQuestions from './questions.js';
+
+//initial data
+let currentNumberOfQuestion = 0;
+let correctAnswers = 0;
+let numberOfQuestion = 1;
+let answers = [];
 
 //const
+const questions = getQuestions();
+
 const progressBar = document.querySelector(".progress-bar");
 const questionArea = document.querySelector(".questionArea");
 const scoreArea = document.querySelector(".scoreArea");
 const scoreHeader = document.querySelector(".scoreHeader");
-const scorePct = document.querySelector(".scorePct");
+const scoreColor = document.querySelector(".scoreColor");
 
-//initial data
-let currentQuestion = 0;
-let correctAnswers = 0;
-let numberOfQuestion = 1;
+const redColor = "#f00000";
+const greenColor = "#7FFF00";
 
 showQuestion();
 
 //reset event
-document.querySelector(".scoreArea button").addEventListener("click", () => {
-    currentQuestion = 0;
+document.querySelector(".scoreArea #retryButton").addEventListener("click", () => {
+    currentNumberOfQuestion = 0;
     correctAnswers = 0;
     numberOfQuestion = 1;
+    answers = [];
     showQuestion();
 });
 
+//progressBarFunction
+function progressBarFunction(currentNumberOfQuestion, questions) {
+    return Math.floor((currentNumberOfQuestion / questions.length) * 100);
+}
+
+//display functions
+function displayScoreAreaBlock() {
+    scoreArea.style.display = "block";
+    questionArea.style.display = "none";
+    progressBar.style.width = "100%";
+}
+
+function displayScoreAreaNone() {
+    scoreArea.style.display = "none";
+    questionArea.style.display = "block";
+}
+
+//quiz result functions
+function passed() {
+    scoreHeader.innerHTML = "Passed!";
+    scoreHeader.style.color = greenColor;
+    scoreColor.style.color = greenColor;
+}
+
+function notPassed() {
+    scoreHeader.innerHTML = "Not passed!";
+    scoreHeader.style.color = redColor;
+    scoreColor.style.color = redColor;
+}
+
+//quiz show result
+function showResult(points, correctAnswers, questions) {
+    scoreColor.innerHTML = `${points}% Correct`;
+    document.querySelector(
+        ".scoreText"
+    ).innerHTML = `${correctAnswers} of ${questions.length}  is correct!`;
+
+    document.querySelector(".answers").innerHTML = "<br/> Answers: <br/>" + answers;
+}
+
 //show question
 function showQuestion() {
-    if (questions[currentQuestion]) {
-        let q = questions[currentQuestion];
+    if (questions[currentNumberOfQuestion]) {
+        let currentQuestion = questions[currentNumberOfQuestion];
 
-        let progress = Math.floor((currentQuestion / questions.length) * 100);
-        progressBar.style.width = `${progress}%`;
+        progressBar.style.width = `${progressBarFunction(currentNumberOfQuestion, questions)}%`;
 
-        scoreArea.style.display = "none";
-        questionArea.style.display = "block";
+        displayScoreAreaNone();
 
-        document.querySelector(".question").innerHTML = numberOfQuestion + ". " + q.question;
+        document.querySelector(".question").innerHTML = numberOfQuestion + ". " + currentQuestion.question;
 
         let optionsHtml = "";
 
-        for (let i in q.options) {
-            optionsHtml += `<div data-op="${i}" class="option"> ${q.options[i]}</div>`;
+        for (let indexOfQuestion in currentQuestion.options) {
+            optionsHtml += `<div data-op="${indexOfQuestion}" class="option"> ${currentQuestion.options[indexOfQuestion]}</div>`;
         }
 
         document.querySelector(".options").innerHTML = optionsHtml;
@@ -124,9 +91,8 @@ function showQuestion() {
         document.querySelectorAll(".options .option").forEach((item) => {
             item.addEventListener("click", optionsClickEvent);
         });
-    } 
 
-    else {
+    } else {
         finishQuiz();
     }
 }
@@ -135,34 +101,25 @@ function showQuestion() {
 function optionsClickEvent(e) {
     let clickedOption = parseInt(e.target.getAttribute("data-op"));
 
-    if (questions[currentQuestion].answer === clickedOption) {
+    if (questions[currentNumberOfQuestion].answer === clickedOption) {
         correctAnswers++;
+        answers.push("<br/>" + numberOfQuestion + ". " + questions[currentNumberOfQuestion].options[clickedOption]);
     }
-    currentQuestion++;
+    currentNumberOfQuestion++;
     numberOfQuestion++;
     showQuestion();
 }
 
-
 //finish quiz
 function finishQuiz() {
-    let points = Math.floor((correctAnswers / questions.length) * 100);
+    let points = progressBarFunction(correctAnswers, questions);
 
     if (points < 50) {
-        scoreHeader.innerHTML = "Not passed!";
-        scorePct.style.color = "#f00000";
-    }
-    else if (points > 50) {
-        scoreHeader.innerHTML = "Passed!";
-        scorePct.style.color = "#ffc900";
+        notPassed();
+    } else if (points >= 50) {
+        passed();
     } 
     
-    scorePct.innerHTML = `${points}% Correct`;
-    document.querySelector(
-        ".scoreText"
-    ).innerHTML = `${correctAnswers} of ${questions.length}  is correct!`;
-
-    scoreArea.style.display = "block";
-    questionArea.style.display = "none";
-    progressBar.style.width = "100%";
+    showResult(points, correctAnswers, questions)
+    displayScoreAreaBlock();
 }
