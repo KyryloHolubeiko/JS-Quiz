@@ -27,6 +27,10 @@ document.querySelector(".scoreArea #retryButton").addEventListener("click", () =
     numberOfQuestion = 1;
     answers = [];
     showQuestion();
+
+    document.getElementById("correctAnswer").style.display = 'none';
+    document.getElementById("falseAnswer").style.display = 'none';
+
 });
 
 //progressBarFunction
@@ -103,7 +107,16 @@ function optionsClickEvent(e) {
 
     if (questions[currentNumberOfQuestion].answer === clickedOption) {
         correctAnswers++;
+        
+        document.getElementById("correctAnswer").style.display = 'block';
+        document.getElementById("falseAnswer").style.display = 'none';
+
         answers.push("<br/>" + numberOfQuestion + ". " + questions[currentNumberOfQuestion].options[clickedOption]);
+    }
+
+    else {
+        document.getElementById("correctAnswer").style.display = 'none';
+        document.getElementById("falseAnswer").style.display = 'block';
     }
     currentNumberOfQuestion++;
     numberOfQuestion++;
