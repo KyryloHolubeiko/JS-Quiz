@@ -115,14 +115,8 @@ h2 {
   display: none;
 }
 
-#correctAnswer {
+#answer {
   margin-top: 20px;
   font-size: 30px;
   color: #0d630d;
-}
-
-#falseAnswer {
-  margin-top: 20px;
-  font-size: 30px;
-  color: crimson;
 }

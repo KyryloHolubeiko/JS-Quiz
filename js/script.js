@@ -15,6 +15,8 @@ const scoreArea = document.querySelector(".scoreArea");
 const scoreHeader = document.querySelector(".scoreHeader");
 const scoreColor = document.querySelector(".scoreColor");
 
+const showAnswer = document.getElementById("answer");
+
 const redColor = "#f00000";
 const greenColor = "#7FFF00";
 
@@ -26,11 +28,24 @@ document.querySelector(".scoreArea #retryButton").addEventListener("click", () =
     correctAnswers = 0;
     numberOfQuestion = 1;
     answers = [];
+    showAnswer.innerHTML = "";
     showQuestion();
+});
 
-    document.getElementById("correctAnswer").style.display = 'none';
-    document.getElementById("falseAnswer").style.display = 'none';
+//show answer button
+document.querySelector(".questionArea #showCorrect").addEventListener("click", () => {
+    if (showAnswer.style.display === 'none') {
+        document.getElementById("answer").style.display = 'block';
+    } else
+        showAnswer.style.display = "none";
+});
 
+//next button
+document.querySelector(".questionArea #moveNext").addEventListener("click", () => {
+    showAnswer.innerHTML = "";
+    currentNumberOfQuestion++;
+    numberOfQuestion++;
+    showQuestion();
 });
 
 //progressBarFunction
@@ -95,7 +110,6 @@ function showQuestion() {
         document.querySelectorAll(".options .option").forEach((item) => {
             item.addEventListener("click", optionsClickEvent);
         });
-
     } else {
         finishQuiz();
     }
@@ -104,23 +118,21 @@ function showQuestion() {
 //click event
 function optionsClickEvent(e) {
     let clickedOption = parseInt(e.target.getAttribute("data-op"));
-
     if (questions[currentNumberOfQuestion].answer === clickedOption) {
         correctAnswers++;
-        
-        document.getElementById("correctAnswer").style.display = 'block';
-        document.getElementById("falseAnswer").style.display = 'none';
+        document.getElementById("answer").innerHTML = "Correct!";
+        document.getElementById("answer").style.color = greenColor;
 
         answers.push("<br/>" + numberOfQuestion + ". " + questions[currentNumberOfQuestion].options[clickedOption]);
+
+    } else {
+        document.getElementById("answer").innerHTML = "Incorrect!";
+        document.getElementById("answer").style.color = redColor;
     }
 
-    else {
-        document.getElementById("correctAnswer").style.display = 'none';
-        document.getElementById("falseAnswer").style.display = 'block';
-    }
-    currentNumberOfQuestion++;
-    numberOfQuestion++;
-    showQuestion();
+    document.querySelectorAll(".options .option").forEach((item) => {
+        item.removeEventListener("click", optionsClickEvent);
+    });
 }
 
 //finish quiz
@@ -131,8 +143,8 @@ function finishQuiz() {
         notPassed();
     } else if (points >= 50) {
         passed();
-    } 
-    
+    }
+
     showResult(points, correctAnswers, questions)
     displayScoreAreaBlock();
 }
