@@ -45,6 +45,7 @@ document.querySelector(".questionArea #moveNext").addEventListener("click", () =
     showAnswer.innerHTML = "";
     currentNumberOfQuestion++;
     numberOfQuestion++;
+    document.getElementById("moveNext").disabled = true;
     showQuestion();
 });
 
@@ -125,10 +126,14 @@ function optionsClickEvent(e) {
 
         answers.push("<br/>" + numberOfQuestion + ". " + questions[currentNumberOfQuestion].options[clickedOption]);
 
+        document.querySelector(`[data-op="${clickedOption}"]`).style.backgroundColor = greenColor;
+
     } else {
+        document.querySelector(`[data-op="${clickedOption}"]`).style.backgroundColor = redColor;
         document.getElementById("answer").innerHTML = "Incorrect!";
         document.getElementById("answer").style.color = redColor;
     }
+    document.getElementById("moveNext").disabled = false;
 
     document.querySelectorAll(".options .option").forEach((item) => {
         item.removeEventListener("click", optionsClickEvent);
