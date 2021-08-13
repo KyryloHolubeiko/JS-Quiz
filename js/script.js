@@ -17,86 +17,17 @@ const scoreColor = document.querySelector(".scoreColor");
 
 const showAnswer = document.getElementById("answer");
 
-const redColor = "#f00000";
-const greenColor = "#7FFF00";
-
-showQuestion();
-
-//reset event
-document.querySelector(".scoreArea #retryButton").addEventListener("click", () => {
-    currentNumberOfQuestion = 0;
-    correctAnswers = 0;
-    numberOfQuestion = 1;
-    answers = [];
-    showAnswer.innerHTML = "";
-    showQuestion();
-});
-
-//show answer button
-document.querySelector(".questionArea #showCorrect").addEventListener("click", () => {
-    if (showAnswer.style.display === 'none') {
-        document.getElementById("answer").style.display = 'block';
-    } else
-        showAnswer.style.display = "none";
-});
-
-//next button
-document.querySelector(".questionArea #moveNext").addEventListener("click", () => {
-    showAnswer.innerHTML = "";
-    currentNumberOfQuestion++;
-    numberOfQuestion++;
-    document.getElementById("moveNext").disabled = true;
-    showQuestion();
-});
-
-//progressBarFunction
-function progressBarFunction(currentNumberOfQuestion, questions) {
-    return Math.floor((currentNumberOfQuestion / questions.length) * 100);
-}
-
-//display functions
-function displayScoreAreaBlock() {
-    scoreArea.style.display = "block";
-    questionArea.style.display = "none";
-    progressBar.style.width = "100%";
-}
-
-function displayScoreAreaNone() {
-    scoreArea.style.display = "none";
-    questionArea.style.display = "block";
-}
-
-//quiz result functions
-function passed() {
-    scoreHeader.innerHTML = "Passed!";
-    scoreHeader.style.color = greenColor;
-    scoreColor.style.color = greenColor;
-}
-
-function notPassed() {
-    scoreHeader.innerHTML = "Not passed!";
-    scoreHeader.style.color = redColor;
-    scoreColor.style.color = redColor;
-}
-
-//quiz show result
-function showResult(points, correctAnswers, questions) {
-    scoreColor.innerHTML = `${points}% Correct`;
-    document.querySelector(
-        ".scoreText"
-    ).innerHTML = `${correctAnswers} of ${questions.length}  is correct!`;
-
-    document.querySelector(".answers").innerHTML = "<br/> Answers: <br/>" + answers;
-}
+const RED_COLOR = "#f00000";
+const GREEN_COLOR = "#7FFF00";
 
 //show question
-function showQuestion() {
+const showQuestion = () => {
     if (questions[currentNumberOfQuestion]) {
         let currentQuestion = questions[currentNumberOfQuestion];
 
-        progressBar.style.width = `${progressBarFunction(currentNumberOfQuestion, questions)}%`;
+        progressBar.style.width = `${getProgressBar(currentNumberOfQuestion, questions)}%`;
 
-        displayScoreAreaNone();
+        getDisplayNoneStyle();
 
         document.querySelector(".question").innerHTML = numberOfQuestion + ". " + currentQuestion.question;
 
@@ -117,21 +48,21 @@ function showQuestion() {
 }
 
 //click event
-function optionsClickEvent(e) {
+const optionsClickEvent = (e) => {
     let clickedOption = parseInt(e.target.getAttribute("data-op"));
     if (questions[currentNumberOfQuestion].answer === clickedOption) {
         correctAnswers++;
         document.getElementById("answer").innerHTML = "Correct!";
-        document.getElementById("answer").style.color = greenColor;
+        document.getElementById("answer").style.color = GREEN_COLOR;
 
         answers.push("<br/>" + numberOfQuestion + ". " + questions[currentNumberOfQuestion].options[clickedOption]);
 
-        document.querySelector(`[data-op="${clickedOption}"]`).style.backgroundColor = greenColor;
+        document.querySelector(`[data-op="${clickedOption}"]`).style.backgroundColor = GREEN_COLOR;
 
     } else {
-        document.querySelector(`[data-op="${clickedOption}"]`).style.backgroundColor = redColor;
+        document.querySelector(`[data-op="${clickedOption}"]`).style.backgroundColor = RED_COLOR;
         document.getElementById("answer").innerHTML = "Incorrect!";
-        document.getElementById("answer").style.color = redColor;
+        document.getElementById("answer").style.color = RED_COLOR;
     }
     document.getElementById("moveNext").disabled = false;
 
@@ -140,9 +71,69 @@ function optionsClickEvent(e) {
     });
 }
 
+//getProgressBar
+const getProgressBar = (currentNumberOfQuestion, questions) => {
+    return Math.floor((currentNumberOfQuestion / questions.length) * 100);
+}
+
+//display styles
+const getDisplayBlockStyle = () => {
+    scoreArea.style.display = "block";
+    questionArea.style.display = "none";
+    progressBar.style.width = "100%";
+}
+
+const getDisplayNoneStyle = () => {
+    scoreArea.style.display = "none";
+    questionArea.style.display = "block";
+}
+
+showQuestion();
+
+//click Events
+document.addEventListener('click', (event) => {
+    console.log(event.target.id);
+    switch (event.target.id) {
+        
+        case 'showCorrect':
+            if (showAnswer.style.display === 'none') {
+                document.getElementById("answer").style.display = 'block';
+            } else
+                showAnswer.style.display = "none";
+            break;
+
+        case 'moveNext': 
+        showAnswer.innerHTML = "";
+            currentNumberOfQuestion++;
+            numberOfQuestion++;
+            document.getElementById("moveNext").disabled = true;
+            showQuestion();
+            break;
+
+        case 'retryButton':
+            currentNumberOfQuestion = 0;
+            correctAnswers = 0;
+            numberOfQuestion = 1;
+            answers = [];
+            showAnswer.innerHTML = "";
+            showQuestion();
+            break;
+    }
+});
+
+//quiz show result
+const showResult = (points, correctAnswers, questions) => {
+    scoreColor.innerHTML = `${points}% Correct`;
+    document.querySelector(
+        ".scoreText"
+    ).innerHTML = `${correctAnswers} of ${questions.length}  is correct!`;
+
+    document.querySelector(".answers").innerHTML = "<br/> Answers: <br/>" + answers;
+}
+
 //finish quiz
-function finishQuiz() {
-    let points = progressBarFunction(correctAnswers, questions);
+const finishQuiz = () => {
+    let points = getProgressBar(correctAnswers, questions);
 
     if (points < 50) {
         notPassed();
@@ -151,5 +142,19 @@ function finishQuiz() {
     }
 
     showResult(points, correctAnswers, questions)
-    displayScoreAreaBlock();
+    
+    getDisplayBlockStyle();
+}
+
+//quiz result functions
+const passed = () => {
+    scoreHeader.innerHTML = "Passed!";
+    scoreHeader.style.color = GREEN_COLOR;
+    scoreColor.style.color = GREEN_COLOR;
+}
+
+const notPassed = () => {
+    scoreHeader.innerHTML = "Not passed!";
+    scoreHeader.style.color = RED_COLOR;
+    scoreColor.style.color = RED_COLOR;
 }

@@ -1,4 +1,4 @@
-export default function getQuestions() {
+const getQuestions = () => {
     return [
         {
             question: 'How to write a "Hello World" in an alertbox?',
@@ -77,4 +77,6 @@ export default function getQuestions() {
             answer: 2
         }
     ];
-}
+};
+
+export default getQuestions;
