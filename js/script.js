@@ -5,6 +5,7 @@ let currentNumberOfQuestion = 0;
 let correctAnswers = 0;
 let numberOfQuestion = 1;
 let answers = [];
+let errors = 0;
 
 //const
 const questions = getQuestions();
@@ -92,17 +93,15 @@ showQuestion();
 
 //click Events
 document.addEventListener('click', (event) => {
-    console.log(event.target.id);
     switch (event.target.id) {
-        
-        case 'showCorrect':
+        case "showCorrect":
             if (showAnswer.style.display === 'none') {
                 document.getElementById("answer").style.display = 'block';
             } else
                 showAnswer.style.display = "none";
             break;
 
-        case 'moveNext': 
+        case "moveNext": 
         showAnswer.innerHTML = "";
             currentNumberOfQuestion++;
             numberOfQuestion++;
@@ -110,13 +109,17 @@ document.addEventListener('click', (event) => {
             showQuestion();
             break;
 
-        case 'retryButton':
+        case "retryButton":
             currentNumberOfQuestion = 0;
             correctAnswers = 0;
             numberOfQuestion = 1;
             answers = [];
             showAnswer.innerHTML = "";
             showQuestion();
+            break;
+        
+        default: 
+            errors++;
             break;
     }
 });
